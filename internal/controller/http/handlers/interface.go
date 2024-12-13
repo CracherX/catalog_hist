@@ -11,6 +11,10 @@ type CategoryUseCase interface {
 	GetCategories() ([]entity.Category, error)
 }
 
+type CountryUseCase interface {
+	GetCountries() ([]entity.Country, error)
+}
+
 type Validator interface {
 	Validate(dto interface{}) error
 }

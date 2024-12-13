@@ -10,3 +10,7 @@ type ProductHandler interface {
 type CategoryHandler interface {
 	GetCategories(w http.ResponseWriter, r *http.Request)
 }
+
+type CountryHandler interface {
+	GetCountries(w http.ResponseWriter, r *http.Request)
+}

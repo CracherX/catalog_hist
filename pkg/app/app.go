@@ -44,8 +44,13 @@ func New() (app *App, err error) {
 	cuc := usecase.NewCategoryUseCase(crepo)
 	ch := handlers.NewCategoryHandler(cuc, app.Validator, app.Logger)
 
+	ctrepo := repository.NewCountryRepoGorm(app.DB)
+	ctuc := usecase.NewCountryUseCase(ctrepo)
+	cth := handlers.NewCountryHandler(ctuc, app.Validator, app.Logger)
+
 	router.Product(app.Router, ph)
 	router.Category(app.Router, ch)
+	router.Country(app.Router, cth)
 	return app, nil
 }
 

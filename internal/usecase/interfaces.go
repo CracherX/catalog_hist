@@ -12,3 +12,7 @@ type ProductRepository interface {
 type CategoryRepository interface {
 	GetAllCategories() ([]entity.Category, error)
 }
+
+type CountryRepository interface {
+	GetAllCountries() ([]entity.Country, error)
+}

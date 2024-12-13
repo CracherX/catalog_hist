@@ -56,6 +56,24 @@ func ToProductDTOs(products []entity.Product) []*GetProductResponse {
 	return responses
 }
 
+type GetCategoriesResponse struct {
+	Categories []entity.Category `json:"categories"`
+}
+
+func ToCategoriesDTO(cat []entity.Category) *GetCategoriesResponse {
+	return &GetCategoriesResponse{
+		Categories: cat,
+	}
+}
+
+type GetCountriesResponse struct {
+	Countries []entity.Country `json:"countries"`
+}
+
+func ToCountriesDTO(count []entity.Country) *GetCountriesResponse {
+	return &GetCountriesResponse{Countries: count}
+}
+
 type e struct {
 	Status  int    `json:"status"`
 	Error   string `json:"error"`
@@ -76,15 +94,5 @@ func Response(w http.ResponseWriter, status int, errMsg string, details ...strin
 		errorResponse.Details = details[0]
 	}
 	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(errorResponse)
-}
-
-type GetCategoriesResponse struct {
-	Categories []entity.Category `json:"categories"`
-}
-
-func ToCategoriesDTO(cat []entity.Category) *GetCategoriesResponse {
-	return &GetCategoriesResponse{
-		Categories: cat,
-	}
+	_ = json.NewEncoder(w).Encode(errorResponse)
 }

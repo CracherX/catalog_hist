@@ -8,24 +8,24 @@ import (
 	"net/http"
 )
 
-type CategoryHandler struct {
-	uc  CategoryUseCase
+type CountryHandler struct {
+	uc  CountryUseCase
 	val Validator
 	log Logger
 }
 
-func NewCategoryHandler(uc CategoryUseCase, val Validator, log Logger) *CategoryHandler {
-	return &CategoryHandler{
+func NewCountryHandler(uc CountryUseCase, val Validator, log Logger) *CountryHandler {
+	return &CountryHandler{
 		uc:  uc,
 		val: val,
 		log: log,
 	}
 }
 
-func (ch *CategoryHandler) GetCategories(w http.ResponseWriter, _ *http.Request) {
-	cat, err := ch.uc.GetCategories()
+func (ch *CountryHandler) GetCountries(w http.ResponseWriter, _ *http.Request) {
+	count, err := ch.uc.GetCountries()
 	if err != nil {
-		ch.log.Error("Ошибка работы UseCase", "Запрос", "GetProducts", "Ошибка", err.Error())
+		ch.log.Error("Ошибка работы UseCase", "Запрос", "GetCountries", "Ошибка", err.Error())
 		if errors.Is(err, driver.ErrBadConn) {
 			dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Ошибка в работе внешних сервисов")
 		} else {
@@ -33,7 +33,7 @@ func (ch *CategoryHandler) GetCategories(w http.ResponseWriter, _ *http.Request)
 		}
 		return
 	}
-	res := dto.ToCategoriesDTO(cat)
+	res := dto.ToCountriesDTO(count)
 
 	w.Header().Add("Content-Type", "application/json")
 
