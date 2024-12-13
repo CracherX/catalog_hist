@@ -13,13 +13,13 @@ func NewProductUseCase(repo ProductRepository) *ProductUseCase {
 }
 
 // GetProducts возвращает товары с учетом пагинации
-func (uc *ProductUseCase) GetProducts(page, pageSize int, country, category string) ([]entity.Product, int64, error) {
+func (uc *ProductUseCase) GetProducts(page, pageSize, from, untill int, countries, categories []string) ([]entity.Product, int64, error) {
 	offset := (page - 1) * pageSize
-	prod, err := uc.repo.GetProducts(pageSize, offset, country, category)
+	prod, err := uc.repo.GetProducts(pageSize, offset, from, untill, countries, categories)
 	if err != nil {
 		return nil, 0, err
 	}
-	count, err := uc.repo.CountRecords(country, category)
+	count, err := uc.repo.CountRecords(from, untill, countries, categories)
 	if err != nil {
 		return nil, 0, err
 	}

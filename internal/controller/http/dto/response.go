@@ -11,11 +11,11 @@ type GetProductsResponse struct {
 	Total    int64                 `json:"total"`
 	Page     int                   `json:"page"`
 	PageSize int                   `json:"pageSize"`
-	Category string                `json:"category"`
-	Country  string                `json:"country"`
+	Category []string              `json:"category"`
+	Country  []string              `json:"country"`
 }
 
-func ToProductsDTO(products []*GetProductResponse, total int64, page, pageSize int, category, country string) *GetProductsResponse {
+func ToProductsDTO(products []*GetProductResponse, total int64, page, pageSize int, category, country []string) *GetProductsResponse {
 	return &GetProductsResponse{
 		Products: products,
 		Category: category,
@@ -30,9 +30,10 @@ type GetProductResponse struct {
 	ID           int     `json:"id"`          // Уникальный идентификатор товара
 	Name         string  `json:"name"`        // Название товара
 	Description  string  `json:"description"` // Описание товара
-	Price        float64 `json:"price"`       // Цена товара
-	CountryName  string  `json:"country"`     // Название страны
-	CategoryName string  `json:"category"`    // Название категории
+	Price        float64 `json:"price"`
+	Year         int     `json:"year"`     // Цена товара
+	CountryName  string  `json:"country"`  // Название страны
+	CategoryName string  `json:"category"` // Название категории
 }
 
 func ToProductDTO(product *entity.Product) *GetProductResponse {
@@ -41,6 +42,7 @@ func ToProductDTO(product *entity.Product) *GetProductResponse {
 		Name:         product.Name,
 		Description:  product.Description,
 		Price:        product.Price,
+		Year:         product.Year,
 		CountryName:  product.Country.Name,
 		CategoryName: product.Category.Name,
 	}
@@ -75,4 +77,14 @@ func Response(w http.ResponseWriter, status int, errMsg string, details ...strin
 	}
 	w.Header().Add("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(errorResponse)
+}
+
+type GetCategoriesResponse struct {
+	Categories []entity.Category `json:"categories"`
+}
+
+func ToCategoriesDTO(cat []entity.Category) *GetCategoriesResponse {
+	return &GetCategoriesResponse{
+		Categories: cat,
+	}
 }

@@ -14,24 +14,28 @@ func NewProductRepoGorm(db *gorm.DB) *ProductRepoGorm {
 }
 
 // GetProducts возвращает список товаров с пагинацией
-func (r *ProductRepoGorm) GetProducts(limit, offset int, countryName, categoryName string) ([]entity.Product, error) {
+func (r *ProductRepoGorm) GetProducts(limit, offset, until, from int, countries, categories []string) ([]entity.Product, error) {
 	var products []entity.Product
 	query := r.db.Preload("Country").Preload("Category")
 
-	// Добавляем фильтрацию по стране, если указана
-	if countryName != "all" {
-		query = query.Where("countries.name = ?", countryName).Joins("JOIN countries ON countries.id = products.country_id")
+	// Фильтрация по странам
+	if len(countries) != 1 || countries[0] != "all" {
+		query = query.Joins("JOIN countries ON countries.id = products.country_id").
+			Where("countries.name IN ?", countries)
 	}
 
-	// Добавляем фильтрацию по категории, если указана
-	if categoryName != "all" {
-		query = query.Where("categories.name = ?", categoryName).Joins("JOIN categories ON categories.id = products.category_id")
+	// Фильтрация по категориям
+	if len(categories) != 1 || categories[0] != "all" {
+		query = query.Joins("JOIN categories ON categories.id = products.category_id").
+			Where("categories.name IN ?", categories)
 	}
 
-	// Применяем пагинацию
+	// Фильтрация по диапазону дат
+	query = query.Where("products.year BETWEEN ? AND ?", until, from)
+
+	// Пагинация
 	query = query.Limit(limit).Offset(offset)
 
-	// Выполняем запрос
 	if err := query.Find(&products).Error; err != nil {
 		return nil, err
 	}
@@ -39,16 +43,27 @@ func (r *ProductRepoGorm) GetProducts(limit, offset int, countryName, categoryNa
 	return products, nil
 }
 
-func (r *ProductRepoGorm) CountRecords(countryName, categoryName string) (int64, error) {
-	var products entity.Product
+func (r *ProductRepoGorm) CountRecords(from, untill int, countries, categories []string) (int64, error) {
 	var count int64
+	var products entity.Product
 	query := r.db.Model(&products)
-	if countryName != "all" {
-		query = query.Where("countries.name = ?", countryName).Joins("JOIN countries ON countries.id = products.country_id")
+
+	// Фильтрация по странам
+	if len(countries) != 1 || countries[0] != "all" {
+		query = query.Joins("JOIN countries ON countries.id = products.country_id").
+			Where("countries.name IN ?", countries)
 	}
-	if categoryName != "all" {
-		query = query.Where("categories.name = ?", categoryName).Joins("JOIN categories ON categories.id = products.category_id")
+
+	// Фильтрация по категориям
+	if len(categories) != 1 || categories[0] != "all" {
+		query = query.Joins("JOIN categories ON categories.id = products.category_id").
+			Where("categories.name IN ?", categories)
 	}
+
+	// Фильтрация по диапазону дат
+	query = query.Where("products.year BETWEEN ? AND ?", from, untill)
+
+	// Подсчёт количества
 	if err := query.Count(&count).Error; err != nil {
 		return 0, err
 	}

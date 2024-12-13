@@ -40,7 +40,12 @@ func New() (app *App, err error) {
 	puc := usecase.NewProductUseCase(prepo)
 	ph := handlers.NewProductHandler(puc, app.Validator, app.Logger)
 
+	crepo := repository.NewCategoryRepoGorm(app.DB)
+	cuc := usecase.NewCategoryUseCase(crepo)
+	ch := handlers.NewCategoryHandler(cuc, app.Validator, app.Logger)
+
 	router.Product(app.Router, ph)
+	router.Category(app.Router, ch)
 	return app, nil
 }
 
