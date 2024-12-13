@@ -1,0 +1,12 @@
+server:
+  app_name: "Catalog service"
+  port: ":8080"
+  debug: true
+database:
+  user: "Cracher"
+  password: "123"
+  host: "localhost"
+  port: "5432"
+  name: "test_catalog"
+  ssl_mode: "disable"
+  retries: 1
