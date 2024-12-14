@@ -1,14 +1,20 @@
 package dto
 
 type GetProductsRequest struct {
-	PageSize   string   `validate:"required,numeric"`
-	Page       string   `validate:"required,numeric"`
+	PageSize   string   `validate:"numeric"`
+	Page       string   `validate:"numeric"`
 	From       string   `validate:"required,len=4,numeric"`
 	Until      string   `validate:"required,len=4,numeric"`
-	Categories []string `validate:"required" json:"categories"`
-	Countries  []string `validate:"required" json:"countries"`
+	Categories []string `json:"categories"`
+	Countries  []string `json:"countries"`
 }
 
 type GetProductRequest struct {
 	ID string `validate:"required,numeric"`
+}
+
+type PatchProductRequest struct {
+	JWT     string                 `validate:"required,jwt"`
+	ID      string                 `validate:"required,numeric"`
+	Updates map[string]interface{} `validate:"required"`
 }

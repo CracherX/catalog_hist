@@ -6,6 +6,7 @@ import (
 	"github.com/CracherX/catalog_hist/internal/controller/http/router"
 	"github.com/CracherX/catalog_hist/internal/usecase"
 	"github.com/CracherX/catalog_hist/internal/usecase/repository"
+	"github.com/CracherX/catalog_hist/pkg/client"
 	"github.com/CracherX/catalog_hist/pkg/config"
 	"github.com/CracherX/catalog_hist/pkg/db"
 	"github.com/CracherX/catalog_hist/pkg/logger"
@@ -21,6 +22,7 @@ type App struct {
 	Logger    handlers.Logger
 	DB        *gorm.DB
 	Validator handlers.Validator
+	Client    handlers.Client
 	Router    *mux.Router
 }
 
@@ -34,11 +36,12 @@ func New() (app *App, err error) {
 		return nil, err
 	}
 	app.Validator = validation.NewPlayground()
+	app.Client = client.NewHeimdall(app.Config.Client.Timeout, app.Config.Client.Retries, app.Config.Client.BaseUrl)
 	app.Router = router.Setup()
 
 	prepo := repository.NewProductRepoGorm(app.DB)
 	puc := usecase.NewProductUseCase(prepo)
-	ph := handlers.NewProductHandler(puc, app.Validator, app.Logger)
+	ph := handlers.NewProductHandler(puc, app.Validator, app.Logger, app.Client)
 
 	crepo := repository.NewCategoryRepoGorm(app.DB)
 	cuc := usecase.NewCategoryUseCase(crepo)

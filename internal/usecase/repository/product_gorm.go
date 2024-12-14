@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/CracherX/catalog_hist/internal/entity"
 	"gorm.io/gorm"
 )
@@ -77,5 +78,19 @@ func (r *ProductRepoGorm) GetProduct(id int) (*entity.Product, error) {
 	if err := r.db.Preload("Country").Preload("Category").First(&product, id).Error; err != nil {
 		return nil, err
 	}
+	return &product, nil
+}
+
+func (r *ProductRepoGorm) UpdateProduct(id int, updates map[string]interface{}) (*entity.Product, error) {
+	var product entity.Product
+	if err := r.db.Preload("Country").Preload("Category").First(&product, id).Error; err != nil {
+		return nil, fmt.Errorf("product not found: %w", err)
+	}
+
+	// Обновление указанных полей
+	if err := r.db.Model(&product).Updates(updates).Error; err != nil {
+		return nil, fmt.Errorf("failed to update product: %w", err)
+	}
+
 	return &product, nil
 }

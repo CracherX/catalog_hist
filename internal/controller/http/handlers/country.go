@@ -37,7 +37,7 @@ func (ch *CountryHandler) GetCountries(w http.ResponseWriter, _ *http.Request) {
 
 	w.Header().Add("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(res)
+	err = json.NewEncoder(w).Encode(&res)
 
 	if err != nil {
 		ch.log.Error("Ошибка работы энкодера", "Запрос", "GetCategories", "Ошибка", err.Error())

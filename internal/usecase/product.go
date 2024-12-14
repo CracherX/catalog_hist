@@ -29,3 +29,14 @@ func (uc *ProductUseCase) GetProducts(page, pageSize, from, untill int, countrie
 func (uc *ProductUseCase) GetConcreteProduct(id int) (*entity.Product, error) {
 	return uc.repo.GetProduct(id)
 }
+
+// UpdateProduct обрабатывает обновление продукта
+func (uc *ProductUseCase) UpdateProduct(id int, updates map[string]interface{}) (*entity.Product, error) {
+
+	product, err := uc.repo.UpdateProduct(id, updates)
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
+}

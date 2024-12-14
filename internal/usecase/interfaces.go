@@ -7,6 +7,7 @@ type ProductRepository interface {
 	GetProducts(limit, offset, from, untill int, countries, categories []string) ([]entity.Product, error)
 	CountRecords(from, untill int, countries, categories []string) (int64, error)
 	GetProduct(id int) (*entity.Product, error)
+	UpdateProduct(id int, updates map[string]interface{}) (*entity.Product, error)
 }
 
 type CategoryRepository interface {

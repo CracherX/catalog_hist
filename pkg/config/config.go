@@ -23,6 +23,11 @@ type Config struct {
 		SslMode  string `mapstructure:"ssl_mode"`
 		Retries  int
 	}
+	Client struct {
+		BaseUrl string
+		Timeout int
+		Retries int
+	}
 }
 
 func MustLoad() *Config {

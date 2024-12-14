@@ -96,3 +96,7 @@ func Response(w http.ResponseWriter, status int, errMsg string, details ...strin
 	w.Header().Add("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(errorResponse)
 }
+
+type AuthClientResponse struct {
+	IsAdmin bool `json:"isAdmin"`
+}
