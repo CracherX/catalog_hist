@@ -82,13 +82,13 @@ type e struct {
 }
 
 // Response возвращает сообщение об успехе или ошибке клиенту в json формате.
-func Response(w http.ResponseWriter, status int, errMsg string, details ...string) {
+func Response(w http.ResponseWriter, status int, msg string, details ...string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	errorResponse := e{
 		Status:  status,
 		Error:   http.StatusText(status),
-		Message: errMsg,
+		Message: msg,
 	}
 	if len(details) > 0 {
 		errorResponse.Details = details[0]

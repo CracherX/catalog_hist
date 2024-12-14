@@ -40,3 +40,19 @@ func (uc *ProductUseCase) UpdateProduct(id int, updates map[string]interface{}) 
 
 	return product, nil
 }
+
+func (uc *ProductUseCase) DeleteProduct(id int) error {
+	return uc.repo.DeleteProduct(id)
+}
+
+func (uc *ProductUseCase) AddProduct(product *entity.Product) (*entity.Product, error) {
+	// Проверяем валидность данных, если требуется (можно реализовать бизнес-валидацию)
+
+	// Вызываем метод репозитория для сохранения продукта
+	newProduct, err := uc.repo.AddProduct(product)
+	if err != nil {
+		return nil, err
+	}
+
+	return newProduct, nil
+}

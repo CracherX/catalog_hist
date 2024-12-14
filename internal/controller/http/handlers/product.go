@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/CracherX/catalog_hist/internal/controller/http/dto"
+	"github.com/CracherX/catalog_hist/internal/entity"
 	"net/http"
 	"strconv"
 	"time"
@@ -175,45 +176,124 @@ func (ph *ProductHandler) PatchProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cdto dto.AuthClientResponse
-	params := map[string]string{
-		"jwt": data.JWT,
-	}
-
-	clr, err := ph.cl.Get("/auth/profile", params)
-	if err != nil {
-		ph.log.Error("Ошибка в работе клиента", "Запрос", "PatchProduct")
-		dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Проблема в работе внешних сервисов")
-	}
-
-	if err = json.NewDecoder(clr.Body).Decode(&cdto); err != nil {
-		ph.log.Error("Ошибка работы энкодера", "Запрос", "PatchProducts", "Ошибка", err.Error())
-		dto.Response(w, http.StatusInternalServerError, "Internal Server Error", "Внутренняя ошибка сервера, обратитесь к техническому специалисту")
-		return
-	}
-
-	if cdto.IsAdmin != true {
-		ph.log.Debug("Недостаточно прав для выполнения запроса", "Запрос", "PatchProducts")
-		dto.Response(w, http.StatusForbidden, "Forbidden", "У вас недостаточно прав для вызова данного метода")
+	if err := ph.auth(data.JWT, w); err != nil {
 		return
 	}
 
 	id, _ := strconv.Atoi(data.ID)
 
-	product, err := ph.uc.UpdateProduct(id, data.Updates)
+	_, err := ph.uc.UpdateProduct(id, data.Updates)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.Is(err, driver.ErrBadConn) {
+			dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Ошибка в работе внешних сервисов")
+		} else {
+			dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно (еблан, указывай id страны и категории)")
+		}
 		return
 	}
-
-	res := dto.ToProductDTO(product)
 
 	w.Header().Set("Content-Type", "application/json")
 
-	err = json.NewEncoder(w).Encode(&res)
-	if err != nil {
-		ph.log.Error("Ошибка работы энкодера", "Запрос", "PatchProduct", "Ошибка", err.Error())
-		dto.Response(w, http.StatusInternalServerError, "Internal Server Error", "Внутренняя ошибка сервера, обратитесь к техническому специалисту")
+	dto.Response(w, http.StatusOK, "Обновление выполнено успешно!")
+}
+
+func (ph *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	data := dto.DeleteProductRequest{JWT: query.Get("jwt"), ID: query.Get("id")}
+	if err := ph.val.Validate(&data); err != nil {
+		ph.log.Debug("Получен Bad Request", "Запрос", "DeleteProduct")
+		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
 		return
 	}
+
+	if err := ph.auth(data.JWT, w); err != nil {
+		return
+	}
+
+	id, _ := strconv.Atoi(data.ID)
+	if err := ph.uc.DeleteProduct(id); err != nil {
+		dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Ошибка в работе внешних сервисов")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	dto.Response(w, http.StatusOK, "Удаление выполнено успешно!")
+}
+
+func (ph *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
+	var data dto.AddProductRequest
+	query := r.URL.Query()
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		ph.log.Debug("Получен Bad Request", "Запрос", "AddProduct", "Ошибка", err.Error())
+		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
+		return
+	}
+
+	data.JWT = query.Get("jwt")
+
+	if err := ph.val.Validate(&data); err != nil {
+		ph.log.Debug("Получен Bad Request", "Запрос", "AddProduct", "Ошибка", err.Error())
+		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
+		return
+	}
+
+	if err := ph.auth(data.JWT, w); err != nil {
+		return
+	}
+
+	product := entity.Product{
+		Name:        data.Name,
+		Description: data.Description,
+		Price:       data.Price,
+		Year:        data.Year,
+		CountryID:   data.CountryId,
+		CategoryID:  data.CategoryId,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	_, err := ph.uc.AddProduct(&product)
+	if err != nil {
+		if errors.Is(err, driver.ErrBadConn) {
+			ph.log.Error("Ошибка работы базы данных", "Запрос", "GetProduct", "Ошибка", err.Error())
+			dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Ошибка в работе внешних сервисов")
+		} else {
+			ph.log.Debug("Повторение уникального ключа", "Запрос", "GetProduct", "Ошибка", err.Error())
+			dto.Response(w, http.StatusConflict, "Conflict", "Повторение уникальных значений")
+		}
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	dto.Response(w, http.StatusCreated, "Добавление выполнено успешно!")
+}
+
+func (ph *ProductHandler) auth(jwt string, w http.ResponseWriter) error {
+	var cdto dto.AuthClientResponse
+	params := map[string]string{
+		"jwt": jwt,
+	}
+
+	clr, err := ph.cl.Get("/auth/profile", params)
+	if err != nil {
+		ph.log.Error("Ошибка в работе клиента", "Запрос", "auth")
+		dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Проблема в работе внешних сервисов")
+		return err
+	}
+
+	if err = json.NewDecoder(clr.Body).Decode(&cdto); err != nil {
+		ph.log.Error("Ошибка работы энкодера", "Запрос", "auth", "Ошибка", err.Error())
+		dto.Response(w, http.StatusInternalServerError, "Internal Server Error", "Внутренняя ошибка сервера, обратитесь к техническому специалисту")
+		return err
+	}
+
+	if cdto.IsAdmin != true {
+		ph.log.Debug("Недостаточно прав для выполнения запроса", "Запрос", "auth")
+		dto.Response(w, http.StatusForbidden, "Forbidden", "У вас недостаточно прав для вызова данного метода")
+		return errors.New("недостаточно прав пользователя")
+	}
+	return nil
 }

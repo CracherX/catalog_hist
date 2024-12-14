@@ -18,3 +18,18 @@ type PatchProductRequest struct {
 	ID      string                 `validate:"required,numeric"`
 	Updates map[string]interface{} `validate:"required"`
 }
+
+type DeleteProductRequest struct {
+	JWT string `validate:"required,jwt"`
+	ID  string `validate:"required,numeric"`
+}
+
+type AddProductRequest struct {
+	JWT         string  `validate:"required,jwt"`
+	Name        string  `json:"name" validate:"required"`          // Название товара
+	Description string  `json:"description"`                       // Описание товара
+	Price       float64 `json:"price" validate:"required,numeric"` // Цена товара
+	Year        int     `json:"year" validate:"required"`
+	CountryId   int     `json:"country_id" validate:"required"`
+	CategoryId  int     `json:"category_id" validate:"required"`
+}

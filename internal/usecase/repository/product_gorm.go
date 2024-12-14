@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/CracherX/catalog_hist/internal/entity"
 	"gorm.io/gorm"
 )
@@ -83,14 +82,45 @@ func (r *ProductRepoGorm) GetProduct(id int) (*entity.Product, error) {
 
 func (r *ProductRepoGorm) UpdateProduct(id int, updates map[string]interface{}) (*entity.Product, error) {
 	var product entity.Product
-	if err := r.db.Preload("Country").Preload("Category").First(&product, id).Error; err != nil {
-		return nil, fmt.Errorf("product not found: %w", err)
+	if err := r.db.First(&product, id).Error; err != nil {
+		return nil, err
 	}
 
 	// Обновление указанных полей
 	if err := r.db.Model(&product).Updates(updates).Error; err != nil {
-		return nil, fmt.Errorf("failed to update product: %w", err)
+		return nil, err
 	}
 
 	return &product, nil
+}
+
+func (r *ProductRepoGorm) DeleteProduct(id int) error {
+	// Находим продукт по ID
+	var product entity.Product
+	if err := r.db.First(&product, id).Error; err != nil {
+		// Если продукт не найден, возвращаем ошибку
+		return err
+	}
+
+	// Удаляем продукт из базы данных
+	if err := r.db.Delete(&product).Error; err != nil {
+		// Возвращаем ошибку, если не удалось удалить
+		return err
+	}
+
+	return nil
+}
+
+func (r *ProductRepoGorm) AddProduct(product *entity.Product) (*entity.Product, error) {
+	// Добавляем продукт в базу данных
+	if err := r.db.Create(product).Error; err != nil {
+		return nil, err
+	}
+
+	// Загружаем связанные данные (Country и Category) для возврата полного объекта
+	if err := r.db.First(product, product.ID).Error; err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }

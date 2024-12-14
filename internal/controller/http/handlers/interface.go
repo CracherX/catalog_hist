@@ -9,6 +9,8 @@ type ProductUseCase interface {
 	GetProducts(page, pageSize, from, untill int, countries, categories []string) ([]entity.Product, int64, error)
 	GetConcreteProduct(id int) (*entity.Product, error)
 	UpdateProduct(id int, updates map[string]interface{}) (*entity.Product, error)
+	DeleteProduct(id int) error
+	AddProduct(product *entity.Product) (*entity.Product, error)
 }
 
 type CategoryUseCase interface {
