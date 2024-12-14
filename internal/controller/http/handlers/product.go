@@ -27,13 +27,13 @@ func NewProductHandler(uc ProductUseCase, val Validator, log Logger) *ProductHan
 func (ph *ProductHandler) GetProductsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
 	data := dto.GetProductsRequest{
-		PageSize:   vars.Get("pageSize"),
-		Page:       vars.Get("page"),
-		From:       vars.Get("from"),
-		Until:      vars.Get("until"),
-		Categories: vars["category"],
-		Countries:  vars["country"],
+		PageSize: vars.Get("pageSize"),
+		Page:     vars.Get("page"),
+		From:     vars.Get("from"),
+		Until:    vars.Get("until"),
 	}
+
+	_ = json.NewDecoder(r.Body).Decode(&data)
 
 	// Установка значений по умолчанию
 	if data.PageSize == "" {

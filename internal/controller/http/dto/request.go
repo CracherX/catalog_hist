@@ -5,8 +5,8 @@ type GetProductsRequest struct {
 	Page       string   `validate:"required,numeric"`
 	From       string   `validate:"required,len=4,numeric"`
 	Until      string   `validate:"required,len=4,numeric"`
-	Categories []string `validate:"required"`
-	Countries  []string `validate:"required"`
+	Categories []string `validate:"required" json:"categories"`
+	Countries  []string `validate:"required" json:"countries"`
 }
 
 type GetProductRequest struct {
