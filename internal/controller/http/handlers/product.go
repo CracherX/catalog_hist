@@ -165,7 +165,7 @@ func (ph *ProductHandler) PatchProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := dto.PatchProductRequest{
+	data := dto.PatchRequest{
 		JWT:     query.Get("jwt"),
 		ID:      query.Get("id"),
 		Updates: updates,
@@ -199,7 +199,7 @@ func (ph *ProductHandler) PatchProduct(w http.ResponseWriter, r *http.Request) {
 
 func (ph *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	data := dto.DeleteProductRequest{JWT: query.Get("jwt"), ID: query.Get("id")}
+	data := dto.DeleteRequest{JWT: query.Get("jwt"), ID: query.Get("id")}
 	if err := ph.val.Validate(&data); err != nil {
 		ph.log.Debug("Получен Bad Request", "Запрос", "DeleteProduct")
 		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")

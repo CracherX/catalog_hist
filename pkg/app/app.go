@@ -45,11 +45,11 @@ func New() (app *App, err error) {
 
 	crepo := repository.NewCategoryRepoGorm(app.DB)
 	cuc := usecase.NewCategoryUseCase(crepo)
-	ch := handlers.NewCategoryHandler(cuc, app.Validator, app.Logger)
+	ch := handlers.NewCategoryHandler(cuc, app.Validator, app.Logger, app.Client)
 
 	ctrepo := repository.NewCountryRepoGorm(app.DB)
 	ctuc := usecase.NewCountryUseCase(ctrepo)
-	cth := handlers.NewCountryHandler(ctuc, app.Validator, app.Logger)
+	cth := handlers.NewCountryHandler(ctuc, app.Validator, app.Logger, app.Client)
 
 	router.Product(app.Router, ph)
 	router.Category(app.Router, ch)

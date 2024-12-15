@@ -14,8 +14,14 @@ type ProductRepository interface {
 
 type CategoryRepository interface {
 	GetAllCategories() ([]entity.Category, error)
+	UpdateCategory(id int, updates map[string]interface{}) (*entity.Category, error)
+	DeleteCategory(id int) error
+	AddCategory(product *entity.Category) (*entity.Category, error)
 }
 
 type CountryRepository interface {
 	GetAllCountries() ([]entity.Country, error)
+	AddCountry(product *entity.Country) (*entity.Country, error)
+	DeleteCountry(id int) error
+	UpdateCountry(id int, updates map[string]interface{}) (*entity.Country, error)
 }

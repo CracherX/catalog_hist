@@ -13,13 +13,13 @@ type GetProductRequest struct {
 	ID string `validate:"required,numeric"`
 }
 
-type PatchProductRequest struct {
+type PatchRequest struct {
 	JWT     string                 `validate:"required,jwt"`
 	ID      string                 `validate:"required,numeric"`
 	Updates map[string]interface{} `validate:"required"`
 }
 
-type DeleteProductRequest struct {
+type DeleteRequest struct {
 	JWT string `validate:"required,jwt"`
 	ID  string `validate:"required,numeric"`
 }
@@ -32,4 +32,16 @@ type AddProductRequest struct {
 	Year        int     `json:"year" validate:"required"`
 	CountryId   int     `json:"country_id" validate:"required"`
 	CategoryId  int     `json:"category_id" validate:"required"`
+}
+
+type AddCategoryRequest struct {
+	JWT         string `validate:"required,jwt"`
+	Name        string `json:"name" validate:"required"` // Название товара
+	Description string `json:"description"`              // Описание товара
+}
+
+type AddCountryRequest struct {
+	JWT  string `validate:"required,jwt"`
+	Name string `json:"name" validate:"required"` // Название товара
+	Code string `json:"code"`                     // Описание товара
 }

@@ -15,10 +15,16 @@ type ProductUseCase interface {
 
 type CategoryUseCase interface {
 	GetCategories() ([]entity.Category, error)
+	UpdateCategory(id int, updates map[string]interface{}) (*entity.Category, error)
+	DeleteCategory(id int) error
+	AddCategory(product *entity.Category) (*entity.Category, error)
 }
 
 type CountryUseCase interface {
 	GetCountries() ([]entity.Country, error)
+	AddCountry(product *entity.Country) (*entity.Country, error)
+	DeleteCountry(id int) error
+	UpdateCategory(id int, updates map[string]interface{}) (*entity.Country, error)
 }
 
 type Validator interface {

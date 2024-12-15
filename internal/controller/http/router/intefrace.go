@@ -12,8 +12,14 @@ type ProductHandler interface {
 
 type CategoryHandler interface {
 	GetCategories(w http.ResponseWriter, r *http.Request)
+	DeleteCategory(w http.ResponseWriter, r *http.Request)
+	PatchCategory(w http.ResponseWriter, r *http.Request)
+	AddCategory(w http.ResponseWriter, r *http.Request)
 }
 
 type CountryHandler interface {
 	GetCountries(w http.ResponseWriter, r *http.Request)
+	DeleteCountry(w http.ResponseWriter, r *http.Request)
+	PatchCountry(w http.ResponseWriter, r *http.Request)
+	AddCountry(w http.ResponseWriter, r *http.Request)
 }
