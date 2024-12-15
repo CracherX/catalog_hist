@@ -30,6 +30,7 @@ type AddProductRequest struct {
 	Description string  `json:"description"`                       // Описание товара
 	Price       float64 `json:"price" validate:"required,numeric"` // Цена товара
 	Year        int     `json:"year" validate:"required"`
+	Picture     string  `json:"picture"`
 	CountryId   int     `json:"country_id" validate:"required"`
 	CategoryId  int     `json:"category_id" validate:"required"`
 }

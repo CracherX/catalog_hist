@@ -9,6 +9,7 @@ type Product struct {
 	Description string    `json:"description"` // Описание товара
 	Price       float64   `json:"price"`       // Цена товара
 	Year        int       `json:"year"`
+	Picture     string    `json:"picture"`
 	CountryID   int       `json:"country_id"`  // Внешний ключ на страну
 	Country     Country   `json:"country"`     // Связь с таблицей стран
 	CategoryID  int       `json:"category_id"` // Внешний ключ на категорию

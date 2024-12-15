@@ -9,6 +9,7 @@ type Product struct {
 	Description string    `gorm:"type:text;not null" json:"description"`    // Описание товара
 	Price       float64   `gorm:"type:decimal(10,2);not null" json:"price"` // Цена товара
 	Year        int       `gorm:"type:int;not null;check:year >= 1000 AND year <= 9999"`
+	Picture     string    `gorm:"type:varchar(255)"`
 	CountryID   int       `gorm:"not null" json:"country_id"`                                        // Внешний ключ на страну
 	Country     Country   `gorm:"foreignKey:CountryID;constraint:OnDelete:CASCADE" json:"country"`   // Связь с таблицей стран
 	CategoryID  int       `gorm:"not null" json:"category_id"`                                       // Внешний ключ на категорию

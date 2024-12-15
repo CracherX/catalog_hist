@@ -248,6 +248,7 @@ func (ph *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 		Description: data.Description,
 		Price:       data.Price,
 		Year:        data.Year,
+		Picture:     data.Picture,
 		CountryID:   data.CountryId,
 		CategoryID:  data.CategoryId,
 		CreatedAt:   time.Now(),
