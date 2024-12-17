@@ -33,7 +33,9 @@ type GetProductResponse struct {
 	Price        float64 `json:"price"`
 	Year         int     `json:"year"` // Цена товара
 	Picture      string  `json:"picture"`
-	CountryName  string  `json:"country"`  // Название страны
+	CountryId    int     `json:"countryId"`
+	CountryName  string  `json:"country"` // Название страны
+	CategoryId   int     `json:"categoryId"`
 	CategoryName string  `json:"category"` // Название категории
 }
 
@@ -45,7 +47,9 @@ func ToProductDTO(product *entity.Product) *GetProductResponse {
 		Price:        product.Price,
 		Year:         product.Year,
 		Picture:      product.Picture,
+		CountryId:    product.CountryID,
 		CountryName:  product.Country.Name,
+		CategoryId:   product.CategoryID,
 		CategoryName: product.Category.Name,
 	}
 }

@@ -46,7 +46,7 @@ func (ph *ProductHandler) GetProductsHandler(w http.ResponseWriter, r *http.Requ
 		data.Page = "1"
 	}
 	if data.From == "" {
-		data.From = "1900" // Минимальная дата по умолчанию
+		data.From = "1600" // Минимальная дата по умолчанию
 	}
 	if data.Until == "" {
 		data.Until = strconv.Itoa(time.Now().Year()) // Текущий год по умолчанию
