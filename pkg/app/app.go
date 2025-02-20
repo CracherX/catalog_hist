@@ -9,8 +9,10 @@ import (
 	"github.com/CracherX/catalog_hist/pkg/client"
 	"github.com/CracherX/catalog_hist/pkg/config"
 	"github.com/CracherX/catalog_hist/pkg/db"
+	"github.com/CracherX/catalog_hist/pkg/db/elastic"
 	"github.com/CracherX/catalog_hist/pkg/logger"
 	validation "github.com/CracherX/catalog_hist/pkg/validator"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -24,11 +26,12 @@ type App struct {
 	Validator handlers.Validator
 	Client    handlers.Client
 	Router    *mux.Router
+	Elastic   *elasticsearch.Client
 }
 
 func New() (app *App, err error) {
 	app = &App{}
-
+	// TODO: подумать насчет WaitGroup здесь
 	app.Config = config.MustLoad()
 	app.Logger = logger.MustInitZap(app.Config.Server.Debug)
 	app.DB, err = db.Connect(app.Config, app.Config.Database.Retries)
@@ -37,10 +40,14 @@ func New() (app *App, err error) {
 	}
 	app.Validator = validation.NewPlayground()
 	app.Client = client.NewHeimdall(app.Config.Client.Timeout, app.Config.Client.Retries, app.Config.Client.BaseUrl)
+	app.Elastic, err = elastic.Connect(app.Config, app.DB, app.Logger)
+	if err != nil {
+		return nil, err
+	}
 	app.Router = router.Setup()
 
 	prepo := repository.NewProductRepoGorm(app.DB)
-	puc := usecase.NewProductUseCase(prepo)
+	puc := usecase.NewProductUseCase(prepo, app.Elastic)
 	ph := handlers.NewProductHandler(puc, app.Validator, app.Logger, app.Client)
 
 	crepo := repository.NewCategoryRepoGorm(app.DB)

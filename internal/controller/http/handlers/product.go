@@ -268,13 +268,11 @@ func (ph *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	dto.Response(w, http.StatusCreated, "Добавление выполнено успешно!")
 }
 
+// TODO: Какой же ты еблан, вынеси ошибки нахуй отсюда с логированием и ответом, делай это всё в обработчике и сделай функцию общую нахуй, это ебейшее нарушение DRY
 func (ph *ProductHandler) auth(jwt string, w http.ResponseWriter) error {
 	var cdto dto.AuthClientResponse
 	params := map[string]string{

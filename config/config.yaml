@@ -14,3 +14,5 @@ client:
   BaseUrl: "http://127.0.0.1:8079"
   Timeout: 5
   Retries: 3
+elastic_client:
+  Url: "http://127.0.0.1:9200"

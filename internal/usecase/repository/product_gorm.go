@@ -82,7 +82,7 @@ func (r *ProductRepoGorm) GetProduct(id int) (*entity.Product, error) {
 
 func (r *ProductRepoGorm) UpdateProduct(id int, updates map[string]interface{}) (*entity.Product, error) {
 	var product entity.Product
-	if err := r.db.First(&product, id).Error; err != nil {
+	if err := r.db.Preload("Country").Preload("Category").First(&product, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -94,21 +94,21 @@ func (r *ProductRepoGorm) UpdateProduct(id int, updates map[string]interface{}) 
 	return &product, nil
 }
 
-func (r *ProductRepoGorm) DeleteProduct(id int) error {
+func (r *ProductRepoGorm) DeleteProduct(id int) (*entity.Product, error) {
 	// Находим продукт по ID
 	var product entity.Product
-	if err := r.db.First(&product, id).Error; err != nil {
+	if err := r.db.Preload("Country").Preload("Category").First(&product, id).Error; err != nil {
 		// Если продукт не найден, возвращаем ошибку
-		return err
+		return nil, err
 	}
 
 	// Удаляем продукт из базы данных
 	if err := r.db.Delete(&product).Error; err != nil {
 		// Возвращаем ошибку, если не удалось удалить
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &product, nil
 }
 
 func (r *ProductRepoGorm) AddProduct(product *entity.Product) (*entity.Product, error) {
@@ -118,7 +118,7 @@ func (r *ProductRepoGorm) AddProduct(product *entity.Product) (*entity.Product, 
 	}
 
 	// Загружаем связанные данные (Country и Category) для возврата полного объекта
-	if err := r.db.First(product, product.ID).Error; err != nil {
+	if err := r.db.Preload("Country").Preload("Category").First(product, product.ID).Error; err != nil {
 		return nil, err
 	}
 

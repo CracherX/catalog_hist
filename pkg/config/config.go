@@ -28,6 +28,9 @@ type Config struct {
 		Timeout int
 		Retries int
 	}
+	ElasticClient struct {
+		Url string `mapstructure:"url"`
+	} `mapstructure:"elastic_client"`
 }
 
 func MustLoad() *Config {
