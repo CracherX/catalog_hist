@@ -56,7 +56,7 @@ func (ch *CategoryHandler) PatchCategory(w http.ResponseWriter, r *http.Request)
 
 	var updates map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
-		ch.log.Debug("Получен Bad Request", "Запрос", "PatchProduct")
+		ch.log.Debug("Получен Bad Request", "Запрос", "PatchCategory", "Ошибка", err.Error())
 		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
 		return
 	}
@@ -67,7 +67,7 @@ func (ch *CategoryHandler) PatchCategory(w http.ResponseWriter, r *http.Request)
 		Updates: updates,
 	}
 	if err := ch.val.Validate(&data); err != nil {
-		ch.log.Debug("Получен Bad Request", "Запрос", "PatchProduct")
+		ch.log.Debug("Получен Bad Request", "Запрос", "PatchCategory", "Ошибка", err.Error())
 		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
 		return
 	}
@@ -81,8 +81,10 @@ func (ch *CategoryHandler) PatchCategory(w http.ResponseWriter, r *http.Request)
 	_, err := ch.uc.UpdateCategory(id, data.Updates)
 	if err != nil {
 		if errors.Is(err, driver.ErrBadConn) {
+			ch.log.Error("BadGateway", "Запрос", "PatchCategory", "Ошибка", err.Error())
 			dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Ошибка в работе внешних сервисов")
 		} else {
+			ch.log.Error("BadGateway", "Запрос", "PatchCategory", "Ошибка", err.Error())
 			dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно (еблан, указывай id страны и категории)")
 		}
 		return
@@ -95,9 +97,12 @@ func (ch *CategoryHandler) PatchCategory(w http.ResponseWriter, r *http.Request)
 
 func (ch *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
-	data := dto.DeleteRequest{JWT: query.Get("jwt"), ID: query.Get("id")}
+	data := dto.DeleteRequest{
+		JWT: query.Get("jwt"),
+		ID:  query.Get("id"),
+	}
 	if err := ch.val.Validate(&data); err != nil {
-		ch.log.Debug("Получен Bad Request", "Запрос", "DeleteProduct")
+		ch.log.Debug("Получен Bad Request", "Запрос", "DeleteCategory", "Ошибка", err.Error())
 		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
 		return
 	}
@@ -108,6 +113,7 @@ func (ch *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request
 
 	id, _ := strconv.Atoi(data.ID)
 	if err := ch.uc.DeleteCategory(id); err != nil {
+		ch.log.Error("Bad Gateway", "Запрос", "DeleteCategory", "Ошибка", err.Error())
 		dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Ошибка в работе внешних сервисов")
 		return
 	}
@@ -122,7 +128,7 @@ func (ch *CategoryHandler) AddCategory(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		ch.log.Debug("Получен Bad Request", "Запрос", "AddProduct", "Ошибка", err.Error())
+		ch.log.Debug("Получен Bad Request", "Запрос", "AddCategory", "Ошибка", err.Error())
 		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
 		return
 	}
@@ -130,7 +136,7 @@ func (ch *CategoryHandler) AddCategory(w http.ResponseWriter, r *http.Request) {
 	data.JWT = query.Get("jwt")
 
 	if err := ch.val.Validate(&data); err != nil {
-		ch.log.Debug("Получен Bad Request", "Запрос", "AddProduct", "Ошибка", err.Error())
+		ch.log.Debug("Получен Bad Request", "Запрос", "AddCategory", "Ошибка", err.Error())
 		dto.Response(w, http.StatusBadRequest, "Bad Request", "Обратитесь к документации и заполните тело запроса правильно")
 		return
 	}
@@ -149,10 +155,10 @@ func (ch *CategoryHandler) AddCategory(w http.ResponseWriter, r *http.Request) {
 	_, err := ch.uc.AddCategory(&product)
 	if err != nil {
 		if errors.Is(err, driver.ErrBadConn) {
-			ch.log.Error("Ошибка работы базы данных", "Запрос", "GetProduct", "Ошибка", err.Error())
+			ch.log.Error("Ошибка работы базы данных", "Запрос", "AddCategory", "Ошибка", err.Error())
 			dto.Response(w, http.StatusBadGateway, "Bad Gateway", "Ошибка в работе внешних сервисов")
 		} else {
-			ch.log.Debug("Повторение уникального ключа", "Запрос", "GetProduct", "Ошибка", err.Error())
+			ch.log.Debug("Повторение уникального ключа", "Запрос", "AddCategory", "Ошибка", err.Error())
 			dto.Response(w, http.StatusConflict, "Conflict", "Повторение уникальных значений")
 		}
 		return
