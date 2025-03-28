@@ -65,7 +65,7 @@ func (h *PictureHandler) DeletePicture(w http.ResponseWriter, r *http.Request) {
 
 	data := dto.DeleteRequest{
 		JWT: query.Get("jwt"),
-		ID:  query.Get("productID"),
+		ID:  query.Get("ID"),
 	}
 
 	err := h.val.Validate(&data)
