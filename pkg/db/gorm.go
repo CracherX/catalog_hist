@@ -16,7 +16,7 @@ func Connect(cfg *config.Config, retr int) (db *gorm.DB, err error) {
 	for i := 0; i <= retr; i++ {
 		db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err == nil {
-			err = db.AutoMigrate(&models.Category{}, &models.Country{}, &models.Product{})
+			err = db.AutoMigrate(&models.Category{}, &models.Country{}, &models.Product{}, &models.Picture{})
 			return db, nil
 		}
 		rem := retr - i

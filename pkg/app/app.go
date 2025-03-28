@@ -58,9 +58,14 @@ func New() (app *App, err error) {
 	ctuc := usecase.NewCountryUseCase(ctrepo)
 	cth := handlers.NewCountryHandler(ctuc, app.Validator, app.Logger, app.Client)
 
+	picrepo := repository.NewPictureRepoGorm(app.DB)
+	picuc := usecase.NewPictureUC(picrepo)
+	hpic := handlers.NewPictureHandler(picuc, app.Validator, app.Logger)
+
 	router.Product(app.Router, ph)
 	router.Category(app.Router, ch)
 	router.Country(app.Router, cth)
+	router.Pictures(app.Router, hpic)
 	return app, nil
 }
 

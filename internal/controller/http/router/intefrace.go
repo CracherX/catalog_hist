@@ -23,3 +23,9 @@ type CountryHandler interface {
 	PatchCountry(w http.ResponseWriter, r *http.Request)
 	AddCountry(w http.ResponseWriter, r *http.Request)
 }
+
+type PictureHandler interface {
+	AddPictures(w http.ResponseWriter, r *http.Request)
+	DeletePicture(w http.ResponseWriter, r *http.Request)
+	GetAllProductPictures(w http.ResponseWriter, r *http.Request)
+}

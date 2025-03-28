@@ -25,3 +25,9 @@ type CountryRepository interface {
 	DeleteCountry(id int) error
 	UpdateCountry(id int, updates map[string]interface{}) (*entity.Country, error)
 }
+
+type PictureRepository interface {
+	AddPictures(prodID int, url ...string) error
+	DeletePicture(id int) error
+	GetAllPictures(prodId int) ([]entity.Picture, error)
+}

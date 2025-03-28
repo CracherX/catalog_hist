@@ -27,6 +27,12 @@ type CountryUseCase interface {
 	UpdateCategory(id int, updates map[string]interface{}) (*entity.Country, error)
 }
 
+type PictureUseCase interface {
+	AddPictures(prodID int, url ...string) error
+	DeletePicture(id int) error
+	GetPictures(prodID int) ([]entity.Picture, error)
+}
+
 type Validator interface {
 	Validate(dto interface{}) error
 }

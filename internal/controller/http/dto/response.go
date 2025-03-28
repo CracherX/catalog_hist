@@ -106,3 +106,8 @@ func Response(w http.ResponseWriter, status int, msg string, details ...string) 
 type AuthClientResponse struct {
 	IsAdmin bool `json:"isAdmin"`
 }
+
+type GetPicturesResponse struct {
+	ProductID int              `json:"productID"`
+	Pictures  []entity.Picture `json:"pictures"`
+}

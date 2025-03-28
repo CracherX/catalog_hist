@@ -46,3 +46,13 @@ type AddCountryRequest struct {
 	Name string `json:"name" validate:"required"` // Название товара
 	Code string `json:"code"`                     // Описание товара
 }
+
+type AddPicturesRequest struct {
+	JWT        string   `validate:"required,jwt" json:"jwt"`
+	PictureURL []string `validate:"required,min=1,dive" json:"pictureURL"`
+	ProductID  int      `validate:"required" json:"productID"`
+}
+
+type GetPicturesRequest struct {
+	ProductID string `validate:"required,numeric"`
+}
