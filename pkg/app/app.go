@@ -60,7 +60,7 @@ func New() (app *App, err error) {
 
 	picrepo := repository.NewPictureRepoGorm(app.DB)
 	picuc := usecase.NewPictureUC(picrepo)
-	hpic := handlers.NewPictureHandler(picuc, app.Validator, app.Logger)
+	hpic := handlers.NewPictureHandler(picuc, app.Validator, app.Logger, app.Client)
 
 	router.Product(app.Router, ph)
 	router.Category(app.Router, ch)
