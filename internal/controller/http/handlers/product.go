@@ -255,7 +255,7 @@ func (ph *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt:   time.Now(),
 	}
 
-	_, err := ph.uc.AddProduct(&product)
+	addedPr, err := ph.uc.AddProduct(&product)
 	if err != nil {
 		if errors.Is(err, driver.ErrBadConn) {
 			ph.log.Error("Ошибка работы базы данных", "Запрос", "GetProduct", "Ошибка", err.Error())
@@ -269,7 +269,7 @@ func (ph *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	dto.Response(w, http.StatusCreated, "Добавление выполнено успешно!")
+	dto.Response(w, http.StatusCreated, "Добавление выполнено успешно!", strconv.Itoa(addedPr.ID))
 }
 
 // TODO: Какой же ты еблан, вынеси ошибки нахуй отсюда с логированием и ответом, делай это всё в обработчике и сделай функцию общую нахуй, это ебейшее нарушение DRY
