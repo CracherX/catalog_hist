@@ -16,7 +16,7 @@ func NewPictureRepoGorm(db *gorm.DB) *PictureRepoGorm {
 // GetAllPictures возвращает все картинки
 func (r *PictureRepoGorm) GetAllPictures(prodId int) ([]entity.Picture, error) {
 	var pictures []entity.Picture
-	err := r.db.Find(&pictures).Where("product_id = ?", prodId).Error
+	err := r.db.Where("product_id = ?", prodId).Find(&pictures).Error
 	if err != nil {
 		return nil, err
 	}

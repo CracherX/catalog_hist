@@ -272,7 +272,7 @@ func (ph *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	dto.Response(w, http.StatusCreated, "Добавление выполнено успешно!", strconv.Itoa(addedPr.ID))
 }
 
-// TODO: Какой же ты еблан, вынеси ошибки нахуй отсюда с логированием и ответом, делай это всё в обработчике и сделай функцию общую нахуй, это ебейшее нарушение DRY
+// TODO: Это в middleware
 func (ph *ProductHandler) auth(jwt string, w http.ResponseWriter) error {
 	var cdto dto.AuthClientResponse
 	params := map[string]string{
